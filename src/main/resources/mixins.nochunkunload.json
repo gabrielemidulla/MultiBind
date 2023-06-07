@@ -1,0 +1,12 @@
+{
+  "compatibilityLevel": "JAVA_8",
+  "package": "me.nixuge.numk.mixins",
+  "refmap": "refmap.numk.json",
+  "mixins": [],
+  "client": [
+    "client.gui.MixinGuiKeyBindingList",
+    "client.gui.MixinKeyEntry",
+    "client.settings.MixinKeyBinding"
+  ],
+  "server": []
+}
