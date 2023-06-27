@@ -30,12 +30,15 @@ public class KeyEntryMixin {
     // (even if it's a random Mixin fork)
     private final static Method getAlternativeKeybindsMethod;
     private final static Method addAlternativeBindMethod;
+    private final static Method setSelectedBindIndexMethod;
     static {
         getAlternativeKeybindsMethod = ReflectionUtils.getMethodFromNameAlone(KeyBinding.class,
                 "getAlternativeKeybinds");
         addAlternativeBindMethod = ReflectionUtils.getMethodFromNameAlone(KeyBinding.class, "addAlternativeBind");
+        setSelectedBindIndexMethod = ReflectionUtils.getMethodFromNameAlone(KeyBinding.class, "setSelectedBindIndex");
     }
 
+    // ===== Vars =====
     private GuiButton btnPrevious;
     private GuiButton btnNextNew;
     // TODO: delete current keybind button
@@ -57,6 +60,8 @@ public class KeyEntryMixin {
     @Shadow
     private String keyDesc;
 
+    // ===== Premade reflection functions =====
+    // Todo: build those automatically w an annotation?
     @SuppressWarnings("unchecked")
     private void grabAlternativeBinds() {
         try {
@@ -74,6 +79,15 @@ public class KeyEntryMixin {
             addAlternativeBindMethod.invoke(keybinding, keybinding.getKeyCodeDefault());
         } catch (Exception e) {
             System.out.println("Bad dev exception 2: " + e);
+            System.out.println(1 / 0);
+        }
+    }
+
+    private void updateSelectedBindIndex() {
+        try {
+            setSelectedBindIndexMethod.invoke(keybinding, selectedBindIndex);
+        } catch (Exception e) {
+            System.out.println("Bad dev exception 3: " + e);
             System.out.println(1 / 0);
         }
     }
@@ -161,14 +175,16 @@ public class KeyEntryMixin {
         System.out.println(alternativeCount - 1);
         if (this.btnPrevious.mousePressed(mc, mouseX, mouseY)) {
             this.selectedBindIndex--;
+            this.updateSelectedBindIndex();
             cir.setReturnValue(true);
         }
         if (this.btnNextNew.mousePressed(mc, mouseX, mouseY)) {
             if (isLastBind())
-                addAlternativeBind();
+                this.addAlternativeBind();
 
             this.alternativeCount = alternativeBinds.size();
             this.selectedBindIndex++;
+            this.updateSelectedBindIndex();
             cir.setReturnValue(true);
         }
         if (this.btnChangeKeyBinding.mousePressed(mc, mouseX, mouseY)) {

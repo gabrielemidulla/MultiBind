@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.nixuge.multibind.binds.AlternativeKeyBinding;
 import net.minecraft.client.settings.KeyBinding;
 
@@ -21,18 +22,30 @@ public class KeyBindingMixin {
 
     @Getter
     private List<AlternativeKeyBinding> alternativeKeybinds;
+    @Getter
+    private int[] validKeyPressesCache; // Faster than a List
+
+    @Setter
+    private int selectedBindIndex = -1;
+
+    private void refreshValidKeyPressesCache() {
+        this.validKeyPressesCache = new int[this.alternativeKeybinds.size()];
+        for (int i = 0; i < validKeyPressesCache.length; i++) {
+            validKeyPressesCache[i] = alternativeKeybinds.get(i).getKeyCode();
+        }
+    }
 
     public void addAlternativeBind(int keyCode) {
-        // System.out.println("Added alternative bind: " + keyCode);
-        // System.out.println(alternativeKeybinds.size());
         this.alternativeKeybinds.add(
             new AlternativeKeyBinding((KeyBinding)(Object)this, keyCode)
         );
+        refreshValidKeyPressesCache();
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void KeyBinding(String description, int keyCode, String category, CallbackInfo ci) {
         this.alternativeKeybinds = new ArrayList<>();
+        refreshValidKeyPressesCache();
     }
 
     @Inject(method = "setKeyBindState", at = @At("RETURN"))
@@ -62,20 +75,18 @@ public class KeyBindingMixin {
     }
 
 
-    @Inject(method = "getKeyCode", at = @At("RETURN"), cancellable = true)
-    private void getKeyCode(CallbackInfoReturnable<Integer> cir) {
-        // After edit: this seems to only be used in the controls gui
-        // to actually show the key, so should be fine without.
-        // System.out.println("getKeyCode called. This is a problem since we possible have more than 1 keycodes");
-        // System.out.println("Todo: check how this is handled & if it's problematic");
-        // cir.setReturnValue(null);
-    }
+    // @Inject(method = "getKeyCode", at = @At("RETURN"), cancellable = true)
+    // private void getKeyCode(CallbackInfoReturnable<Integer> cir) {
+        // This is unfortunately used in Minecraft.class's dispatchKeyPresses,
+        // So I have to mixin this function :/
+    // }
 
-    @Inject(method = "setKeyCode", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "setKeyCode", at = @At("HEAD"), cancellable = true)
     private void setKeyCode(int keyCode, CallbackInfo ci) {
-        // System.out.println("setKeyCode called! new: " + keyCode);
-        // addAlternativeBind(44);
-        // addAlternativeBind(17);
-        // addAlternativeBind(35); //h
+        if (this.selectedBindIndex >= 0) {
+            this.alternativeKeybinds.get(this.selectedBindIndex).setKeyCode(keyCode);
+            ci.cancel();
+        }
+        // negative = normal bind, just process that
     }
 }
