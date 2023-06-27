@@ -1,12 +1,5 @@
-# NoChunkUnload
-A simple 1.8.9 Forge mod to prevent the client from unloading chunks randomly  
-Doesn't prevent chunk from being unloaded due to the render distance*  
-  
-### Template used
-[forge-mixin-example](https://github.com/mouse0w0/forge-mixin-example)  
+# MultiBind
+A legacy Forge mod to bind multiple keys to a single action at once.
 
-### Reasons for this mode
-Chunks unloading was getting quite annoying on the "Mineplex Backup project"
-
-### Other mod for 1.18+
-https://github.com/dlee13/hold-that-chunk
+# Why
+To fix the hotbar on Linux with foreign keyboards (it either works with Shift or without Shift, not both)
