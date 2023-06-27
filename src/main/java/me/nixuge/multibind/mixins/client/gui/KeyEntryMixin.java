@@ -43,7 +43,7 @@ public class KeyEntryMixin {
     @Shadow
     private String keyDesc;
     
-    @Shadow(aliases = {"this$0"})
+    @Shadow(aliases = {"this$0", "field_148284_a"})
     private GuiKeyBindingList outer;
 
 

@@ -7,11 +7,9 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.IntHashMap;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class AlternativeKeyBinding {
-    private static final List<AlternativeKeyBinding> alternativeKeybindArray = Lists
-            .<AlternativeKeyBinding>newArrayList();
-    private static final IntHashMap<AlternativeKeyBinding> alternativeHash = new IntHashMap();
+    private static final List<AlternativeKeyBinding> alternativeKeybindArray = Lists.<AlternativeKeyBinding>newArrayList();
+    private static final IntHashMap<AlternativeKeyBinding> alternativeHash = new IntHashMap<AlternativeKeyBinding>();
     private int keyCode;
     private boolean pressed;
     private int pressTime;

@@ -45,6 +45,7 @@ public class MinecraftMixin {
 
     // TODO: fix the other key press functions (see GuiContainer)
     // While at it removed every "twitch stream" bind
+    // Note: has to be an "Inject" to avoid crashing other mods hooking on it
     @Inject(method = "dispatchKeypresses", at = @At("HEAD"), cancellable = true)
     public void dispatchKeypresses(CallbackInfo ci) {
         int i = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() : Keyboard.getEventKey();
