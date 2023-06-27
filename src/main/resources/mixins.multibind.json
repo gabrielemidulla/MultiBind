@@ -1,0 +1,12 @@
+{
+  "compatibilityLevel": "JAVA_8",
+  "package": "me.nixuge.multibind.mixins",
+  "refmap": "refmap.multibind.json",
+  "mixins": [],
+  "client": [
+    "client.gui.GuiKeyBindingListMixin",
+    "client.gui.KeyEntryMixin",
+    "client.settings.KeyBindingMixin"
+  ],
+  "server": []
+}

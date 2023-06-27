@@ -14,7 +14,7 @@ import me.nixuge.multibind.binds.AlternativeKeyBinding;
 import net.minecraft.client.settings.KeyBinding;
 
 @Mixin(KeyBinding.class)
-public class MixinKeyBinding {
+public class KeyBindingMixin {
     @Shadow
     private boolean pressed;
 
@@ -32,35 +32,38 @@ public class MixinKeyBinding {
     }
 
     @Inject(method = "setKeyBindState", at = @At("RETURN"))
-    public void setKeyBindState(int keyCode, boolean pressed, CallbackInfo ci) {
+    private static void setKeyBindState(int keyCode, boolean pressed, CallbackInfo ci) {
         AlternativeKeyBinding.setKeyBindState(keyCode, pressed);
     }
 
     @Inject(method = "onTick", at = @At("RETURN"))
-    public static void onTick(int keyCode, CallbackInfo ci) {
+    private static void onTick(int keyCode, CallbackInfo ci) {
         AlternativeKeyBinding.onTick(keyCode);
     }
 
     @Inject(method = "unPressAllKeys", at = @At("RETURN"))
-    public static void unPressAllKeys(CallbackInfo ci) {
+    private static void unPressAllKeys(CallbackInfo ci) {
         AlternativeKeyBinding.unPressAllKeys();
     }
 
     @Inject(method = "resetKeyBindingArrayAndHash", at = @At("RETURN"))
-    public static void resetKeyBindingArrayAndHash(CallbackInfo ci) {
+    private static void resetKeyBindingArrayAndHash(CallbackInfo ci) {
         AlternativeKeyBinding.resetKeyBindingArrayAndHash();
     }
 
-    @Inject(method = "isKeyDown", at = @At("RETURN"))
-    public void getKeyCode(CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "isKeyDown", at = @At("HEAD"), cancellable = true)
+    private void isKeyDown(CallbackInfoReturnable<Boolean> cir) {
         boolean otherKeybindPressed = alternativeKeybinds.stream().anyMatch(keybind -> keybind.isKeyDown());
         cir.setReturnValue(this.pressed || otherKeybindPressed);
     }
 
 
-    @Inject(method = "getKeyCode", at = @At("RETURN"))
-    public void getKeyCode(CallbackInfo ci) {
-        System.out.println("getKeyCode called. This is a problem since we possible have more than 1 keycodes");
-        System.out.println("Todo: check how this is handled & if it's problematic");
+    @Inject(method = "getKeyCode", at = @At("RETURN"), cancellable = true)
+    private void getKeyCode(CallbackInfoReturnable<Integer> cir) {
+        // After edit: this seems to only be used in the controls gui
+        // to actually show the key, so should be fine without.
+        // System.out.println("getKeyCode called. This is a problem since we possible have more than 1 keycodes");
+        // System.out.println("Todo: check how this is handled & if it's problematic");
+        // cir.setReturnValue(null);
     }
 }

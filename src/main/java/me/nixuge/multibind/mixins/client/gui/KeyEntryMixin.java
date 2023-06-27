@@ -9,7 +9,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiKeyBindingList.KeyEntry;
 
 @Mixin(KeyEntry.class)
-public class MixinKeyEntry {
+public class KeyEntryMixin {
     private GuiButton previousButton;
     private GuiButton nextButton;
     private GuiButton newButton;

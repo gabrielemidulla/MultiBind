@@ -35,7 +35,7 @@ public class AlternativeKeyBinding {
             ++keybinding.pressTime;
     }
 
-    // Todo
+    // Done
     public static void setKeyBindState(int keyCode, boolean pressed) {
         if (keyCode == 0)
             return;
