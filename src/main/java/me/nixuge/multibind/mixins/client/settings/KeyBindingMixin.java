@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import lombok.Getter;
 import me.nixuge.multibind.binds.AlternativeKeyBinding;
 import net.minecraft.client.settings.KeyBinding;
 
@@ -18,9 +19,10 @@ public class KeyBindingMixin {
     @Shadow
     private boolean pressed;
 
-    public List<AlternativeKeyBinding> alternativeKeybinds;
+    @Getter
+    private List<AlternativeKeyBinding> alternativeKeybinds;
 
-    public void addAlternativeBind(int keyCode) {
+    private void addAlternativeBind(int keyCode) {
         this.alternativeKeybinds.add(
             new AlternativeKeyBinding((KeyBinding)(Object)this, keyCode)
         );
@@ -65,5 +67,13 @@ public class KeyBindingMixin {
         // System.out.println("getKeyCode called. This is a problem since we possible have more than 1 keycodes");
         // System.out.println("Todo: check how this is handled & if it's problematic");
         // cir.setReturnValue(null);
+    }
+
+    @Inject(method = "setKeyCode", at = @At("RETURN"), cancellable = true)
+    private void setKeyCode(int keyCode, CallbackInfo ci) {
+        // System.out.println("setKeyCode called! new: " + keyCode);
+        // addAlternativeBind(44);
+        // addAlternativeBind(17);
+        // addAlternativeBind(35); //h
     }
 }

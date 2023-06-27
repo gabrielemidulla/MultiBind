@@ -21,6 +21,8 @@ import java.io.File;
 @Setter
 public class McMod {
     // Original: NMUK
+    // Todo: add searching capatiblity & rename "BetterBinds" (or do another mod)
+    // Todo: add saving
     public static final String MOD_ID = "multibind";
     public static final String NAME = "Multi Bind";
     public static final String VERSION = "1.0.0";

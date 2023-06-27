@@ -6,6 +6,7 @@
   "client": [
     "client.gui.GuiKeyBindingListMixin",
     "client.gui.KeyEntryMixin",
+    "client.gui.GuiChatMixin",
     "client.settings.KeyBindingMixin"
   ],
   "server": []
