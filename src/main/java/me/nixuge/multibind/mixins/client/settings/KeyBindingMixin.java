@@ -19,33 +19,34 @@ import net.minecraft.client.settings.KeyBinding;
 public class KeyBindingMixin {
     @Shadow
     private boolean pressed;
+    @Shadow
+    private int pressTime;
 
     @Getter
     private List<AlternativeKeyBinding> alternativeKeybinds;
-    @Getter
-    private int[] validKeyPressesCache; // Faster than a List
+    // @Getter
+    // private int[] validKeyPressesCache; // Faster than a List
 
     @Setter
     private int selectedBindIndex = -1;
 
-    private void refreshValidKeyPressesCache() {
-        this.validKeyPressesCache = new int[this.alternativeKeybinds.size()];
-        for (int i = 0; i < validKeyPressesCache.length; i++) {
-            validKeyPressesCache[i] = alternativeKeybinds.get(i).getKeyCode();
-        }
-    }
+    // private void refreshValidKeyPressesCache() {
+    //     this.validKeyPressesCache = new int[this.alternativeKeybinds.size()];
+    //     for (int i = 0; i < validKeyPressesCache.length; i++) {
+    //         validKeyPressesCache[i] = alternativeKeybinds.get(i).getKeyCode();
+    //     }
+    // }
 
     public void addAlternativeBind(int keyCode) {
         this.alternativeKeybinds.add(
-            new AlternativeKeyBinding((KeyBinding)(Object)this, keyCode)
-        );
-        refreshValidKeyPressesCache();
+                new AlternativeKeyBinding((KeyBinding) (Object) this, keyCode));
+        // refreshValidKeyPressesCache();
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void KeyBinding(String description, int keyCode, String category, CallbackInfo ci) {
         this.alternativeKeybinds = new ArrayList<>();
-        refreshValidKeyPressesCache();
+        // refreshValidKeyPressesCache();
     }
 
     @Inject(method = "setKeyBindState", at = @At("RETURN"))
@@ -74,11 +75,25 @@ public class KeyBindingMixin {
         cir.setReturnValue(this.pressed || otherKeybindPressed);
     }
 
+    public boolean isPressedReplica() {
+        if (this.pressTime == 0) {
+            return false;
+        } else {
+            --this.pressTime;
+            return true;
+        }
+    }
+
+    @Inject(method = "isPressed", at = @At("HEAD"), cancellable = true)
+    private void isPressed(CallbackInfoReturnable<Boolean> cir) {
+        boolean otherKeybindPressed = alternativeKeybinds.stream().anyMatch(keybind -> keybind.isPressed());
+        cir.setReturnValue(this.isPressedReplica() || otherKeybindPressed);
+    }
 
     // @Inject(method = "getKeyCode", at = @At("RETURN"), cancellable = true)
     // private void getKeyCode(CallbackInfoReturnable<Integer> cir) {
-        // This is unfortunately used in Minecraft.class's dispatchKeyPresses,
-        // So I have to mixin this function :/
+    // This is unfortunately used in Minecraft.class's dispatchKeyPresses,
+    // So I have to mixin this function :/
     // }
 
     @Inject(method = "setKeyCode", at = @At("HEAD"), cancellable = true)
