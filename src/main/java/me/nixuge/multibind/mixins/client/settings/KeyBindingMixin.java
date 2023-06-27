@@ -22,7 +22,7 @@ public class KeyBindingMixin {
     @Getter
     private List<AlternativeKeyBinding> alternativeKeybinds;
 
-    private void addAlternativeBind(int keyCode) {
+    public void addAlternativeBind(int keyCode) {
         this.alternativeKeybinds.add(
             new AlternativeKeyBinding((KeyBinding)(Object)this, keyCode)
         );
