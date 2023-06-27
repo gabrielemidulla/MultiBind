@@ -23,6 +23,8 @@ public class KeyBindingMixin {
     private List<AlternativeKeyBinding> alternativeKeybinds;
 
     public void addAlternativeBind(int keyCode) {
+        // System.out.println("Added alternative bind: " + keyCode);
+        // System.out.println(alternativeKeybinds.size());
         this.alternativeKeybinds.add(
             new AlternativeKeyBinding((KeyBinding)(Object)this, keyCode)
         );
