@@ -1,4 +1,4 @@
-package me.nixuge.numk;
+package me.nixuge.multibind;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;

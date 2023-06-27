@@ -1,4 +1,4 @@
-package me.nixuge.numk.mixins.client.gui;
+package me.nixuge.multibind.mixins.client.gui;
 
 import org.spongepowered.asm.mixin.Mixin;
 
