@@ -16,9 +16,6 @@ import net.minecraft.client.gui.GuiControls;
 // Also accessors are broken on this mixin version iirc lmfao
 
 public class DataSaver {
-    // @Setter
-    // @Getter
-    // private static GuiKeyBindingList guiKeyBindingList;
     @Setter
     @Getter
     private static GuiControls guiControls;

@@ -18,7 +18,6 @@ public class GuiKeyBindingListMixin {
     
     @Inject(method = "<init>", at = @At("RETURN"))
     public void GuiKeyBindingList(GuiControls controls, Minecraft mcIn, CallbackInfo ci) {
-        // DataSaver.setGuiKeyBindingList((GuiKeyBindingList)(Object)this);
         DataSaver.setGuiControls(controls);
         DataSaver.setMaxListLabelWidth(maxListLabelWidth);
     }

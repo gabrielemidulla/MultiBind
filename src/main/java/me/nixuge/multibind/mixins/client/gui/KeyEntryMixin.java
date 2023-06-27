@@ -152,9 +152,9 @@ public class KeyEntryMixin {
             this.btnChangeKeyBinding.displayString = EnumChatFormatting.RED + this.btnChangeKeyBinding.displayString;
         }
         this.btnChangeKeyBinding.drawButton(mc, mouseX, mouseY);
-        // keybinding.
+
         // Added buttons part
-        this.btnPrevious.xPosition = x + 114; // 105-1 for a bit more space
+        this.btnPrevious.xPosition = x + 114; // 115-1 for a bit more space
         this.btnPrevious.yPosition = y;
         this.btnPrevious.enabled = (selectedBindIndex != -1);
         this.btnPrevious.drawButton(mc, mouseX, mouseY);
@@ -169,10 +169,7 @@ public class KeyEntryMixin {
     }
 
     @Inject(method = "mousePressed", at = @At("HEAD"), cancellable = true)
-    public void mousePressed(int slotIndex, int mouseX, int mouseY, int _1, int _2, int _3,
-            CallbackInfoReturnable<Boolean> cir) {
-        System.out.println(selectedBindIndex);
-        System.out.println(alternativeCount - 1);
+    public void mousePressed(int slotIndex, int mouseX, int mouseY, int _1, int _2, int _3, CallbackInfoReturnable<Boolean> cir) {
         if (this.btnPrevious.mousePressed(mc, mouseX, mouseY)) {
             this.selectedBindIndex--;
             this.updateSelectedBindIndex();
