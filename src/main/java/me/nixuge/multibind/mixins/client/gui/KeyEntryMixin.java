@@ -1,43 +1,26 @@
 package me.nixuge.multibind.mixins.client.gui;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import me.nixuge.multibind.areflections.ReflectionUtils;
+import me.nixuge.multibind.accessors.KeyBindAccessor;
 import me.nixuge.multibind.binds.AlternativeKeyBinding;
-import me.nixuge.multibind.binds.DataSaver;
+import me.nixuge.multibind.mixins.accessors.GuiKBLMixinAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiKeyBindingList.KeyEntry;
+import net.minecraft.client.gui.GuiKeyBindingList;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.EnumChatFormatting;
 
-@Mixin(KeyEntry.class)
+@Mixin({GuiKeyBindingList.KeyEntry.class})
 public class KeyEntryMixin {
-    // Due to Accessors amazingly not working in 1.8,
-    // I have to rely on reflections.
-    // Hope ull like it (:
-    // Ps. If ANYONE finds a way to use accessor in here instead of reflections,
-    // send me a dm
-    // (even if it's a random Mixin fork)
-    private final static Method getAlternativeKeybindsMethod;
-    private final static Method addAlternativeBindMethod;
-    private final static Method setSelectedBindIndexMethod;
-    static {
-        getAlternativeKeybindsMethod = ReflectionUtils.getMethodFromNameAlone(KeyBinding.class,
-                "getAlternativeKeybinds");
-        addAlternativeBindMethod = ReflectionUtils.getMethodFromNameAlone(KeyBinding.class, "addAlternativeBind");
-        setSelectedBindIndexMethod = ReflectionUtils.getMethodFromNameAlone(KeyBinding.class, "setSelectedBindIndex");
-    }
-
     // ===== Vars =====
     private GuiButton btnPrevious;
     private GuiButton btnNextNew;
@@ -59,39 +42,12 @@ public class KeyEntryMixin {
     private KeyBinding keybinding;
     @Shadow
     private String keyDesc;
+    
+    @Shadow(aliases = {"this$0"})
+    private GuiKeyBindingList outer;
 
-    // ===== Premade reflection functions =====
-    // Todo: build those automatically w an annotation?
-    @SuppressWarnings("unchecked")
-    private void grabAlternativeBinds() {
-        try {
-            this.alternativeBinds = (List<AlternativeKeyBinding>) getAlternativeKeybindsMethod.invoke(keybinding);
-            this.alternativeCount = alternativeBinds.size();
-        } catch (Exception e) {
-            // lol
-            System.out.println("Bad dev exception 1: " + e);
-            System.out.println(1 / 0);
-        }
-    }
 
-    private void addAlternativeBind() {
-        try {
-            addAlternativeBindMethod.invoke(keybinding, keybinding.getKeyCodeDefault());
-        } catch (Exception e) {
-            System.out.println("Bad dev exception 2: " + e);
-            System.out.println(1 / 0);
-        }
-    }
-
-    private void updateSelectedBindIndex() {
-        try {
-            setSelectedBindIndexMethod.invoke(keybinding, selectedBindIndex);
-        } catch (Exception e) {
-            System.out.println("Bad dev exception 3: " + e);
-            System.out.println(1 / 0);
-        }
-    }
-
+    // Random "utils" functions
     public int getKeyCodeAtCurrentIndex() {
         if (selectedBindIndex < 0)
             return keybinding.getKeyCode();
@@ -103,6 +59,8 @@ public class KeyEntryMixin {
         return selectedBindIndex == alternativeCount - 1;
     }
 
+
+    // Mixins
     @Inject(method = "<init>", at = @At("RETURN"))
     public void constructor(CallbackInfo ci) {
         this.btnReset.setWidth(30);
@@ -112,18 +70,17 @@ public class KeyEntryMixin {
         this.btnPrevious = new GuiButton(0, 0, 0, 10, 20, "<");
         this.btnNextNew = new GuiButton(0, 0, 0, 10, 20, ">");
 
-        grabAlternativeBinds();
+        this.alternativeBinds = ((KeyBindAccessor)keybinding).getAlternativeKeybinds();
+        this.alternativeCount = alternativeBinds.size();
     }
 
-    // Injecting then cancelling not optimal,
-    // but need to change some positions.
-    @Inject(method = "drawEntry", at = @At("HEAD"), cancellable = true)
+    @Overwrite
     public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY,
-            boolean isSelected, CallbackInfo ci) {
+            boolean isSelected) {
         // Modified vanilla buttons part
-        boolean changingKeybindFlag = DataSaver.getGuiControls().buttonId == this.keybinding;
+        boolean changingKeybindFlag = ((GuiKBLMixinAccessor)outer).getGuiControls().buttonId == this.keybinding;
         mc.fontRendererObj.drawString(this.keyDesc,
-                x + 90 - DataSaver.getMaxListLabelWidth(),
+                x + 90 - ((GuiKBLMixinAccessor)outer).getMaxListLabelWidth(),
                 y + slotHeight / 2 - mc.fontRendererObj.FONT_HEIGHT / 2, 16777215);
         this.btnReset.xPosition = x + 200;
         this.btnReset.yPosition = y;
@@ -164,37 +121,37 @@ public class KeyEntryMixin {
         this.btnNextNew.displayString = isLastBind() ? "+" : ">";
         this.btnNextNew.enabled = true;
         this.btnNextNew.drawButton(mc, mouseX, mouseY);
-
-        ci.cancel();
     }
 
-    @Inject(method = "mousePressed", at = @At("HEAD"), cancellable = true)
-    public void mousePressed(int slotIndex, int mouseX, int mouseY, int _1, int _2, int _3, CallbackInfoReturnable<Boolean> cir) {
+    @Overwrite
+    public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int _1, int _2, int _3) {
         if (this.btnPrevious.mousePressed(mc, mouseX, mouseY)) {
             this.selectedBindIndex--;
-            this.updateSelectedBindIndex();
-            cir.setReturnValue(true);
+            ((KeyBindAccessor)keybinding).setSelectedBindIndex(selectedBindIndex);
+
+            return true;
         }
         if (this.btnNextNew.mousePressed(mc, mouseX, mouseY)) {
             if (isLastBind())
-                this.addAlternativeBind();
+                ((KeyBindAccessor)keybinding).addAlternativeBind(keybinding.getKeyCodeDefault());
 
             this.alternativeCount = alternativeBinds.size();
             this.selectedBindIndex++;
-            this.updateSelectedBindIndex();
-            cir.setReturnValue(true);
+            ((KeyBindAccessor)keybinding).setSelectedBindIndex(selectedBindIndex);
+
+            return true;
         }
         if (this.btnChangeKeyBinding.mousePressed(mc, mouseX, mouseY)) {
-            // TODO: EDIT THIS TO SET THE KEY TO THE CORRECT ALTERNATIVE KEYBIND
-            DataSaver.getGuiControls().buttonId = this.keybinding;
-            cir.setReturnValue(true);
+            ((GuiKBLMixinAccessor)outer).getGuiControls().buttonId = this.keybinding;
+
+            return true;
         } 
         if (this.btnReset.mousePressed(mc, mouseX, mouseY)) {
-            mc.gameSettings.setOptionKeyBinding(this.keybinding,
-                    this.keybinding.getKeyCodeDefault());
+            mc.gameSettings.setOptionKeyBinding(this.keybinding, this.keybinding.getKeyCodeDefault());
             KeyBinding.resetKeyBindingArrayAndHash();
-            cir.setReturnValue(true);
+
+            return true;
         }
-        cir.setReturnValue(false);
+        return false;
     }
 }

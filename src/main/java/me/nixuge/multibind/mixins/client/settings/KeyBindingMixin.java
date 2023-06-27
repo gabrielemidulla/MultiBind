@@ -12,11 +12,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.nixuge.multibind.accessors.KeyBindAccessor;
 import me.nixuge.multibind.binds.AlternativeKeyBinding;
 import net.minecraft.client.settings.KeyBinding;
 
 @Mixin(KeyBinding.class)
-public class KeyBindingMixin {
+public class KeyBindingMixin implements KeyBindAccessor {
     @Shadow
     private boolean pressed;
     @Shadow
@@ -24,29 +25,18 @@ public class KeyBindingMixin {
 
     @Getter
     private List<AlternativeKeyBinding> alternativeKeybinds;
-    // @Getter
-    // private int[] validKeyPressesCache; // Faster than a List
 
     @Setter
     private int selectedBindIndex = -1;
 
-    // private void refreshValidKeyPressesCache() {
-    //     this.validKeyPressesCache = new int[this.alternativeKeybinds.size()];
-    //     for (int i = 0; i < validKeyPressesCache.length; i++) {
-    //         validKeyPressesCache[i] = alternativeKeybinds.get(i).getKeyCode();
-    //     }
-    // }
-
     public void addAlternativeBind(int keyCode) {
         this.alternativeKeybinds.add(
                 new AlternativeKeyBinding((KeyBinding) (Object) this, keyCode));
-        // refreshValidKeyPressesCache();
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void KeyBinding(String description, int keyCode, String category, CallbackInfo ci) {
         this.alternativeKeybinds = new ArrayList<>();
-        // refreshValidKeyPressesCache();
     }
 
     @Inject(method = "setKeyBindState", at = @At("RETURN"))

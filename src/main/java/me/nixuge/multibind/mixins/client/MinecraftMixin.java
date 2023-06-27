@@ -18,7 +18,7 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.ScreenShotHelper;
 
-@Mixin(value = Minecraft.class, priority = 2000)
+@Mixin(Minecraft.class)
 public class MinecraftMixin {
     @Shadow
     GuiScreen currentScreen;
@@ -35,7 +35,7 @@ public class MinecraftMixin {
     @Shadow
     Framebuffer framebufferMc;
 
-    private static long getSystemTime() {
+    private static long getSysTime() {
         return Sys.getTime() * 1000L / Sys.getTimerResolution();
     }
 
@@ -50,7 +50,7 @@ public class MinecraftMixin {
         int i = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() : Keyboard.getEventKey();
 
         if ((i != 0 && !Keyboard.isRepeatEvent())
-            && (!(this.currentScreen instanceof GuiControls) || ((GuiControls) this.currentScreen).time <= getSystemTime() - 20L)
+            && (!(this.currentScreen instanceof GuiControls) || ((GuiControls) this.currentScreen).time <= getSysTime() - 20L)
             && Keyboard.getEventKeyState()) 
         {
             if (this.gameSettings.keyBindFullscreen.isPressed())

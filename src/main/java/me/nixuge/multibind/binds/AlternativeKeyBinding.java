@@ -24,7 +24,6 @@ public class AlternativeKeyBinding {
         alternativeHash.addKey(keyCode, this);
     }
 
-    // Done
     public static void onTick(int keyCode) {
         if (keyCode == 0)
             return;
@@ -35,7 +34,6 @@ public class AlternativeKeyBinding {
             ++keybinding.pressTime;
     }
 
-    // Done
     public static void setKeyBindState(int keyCode, boolean pressed) {
         if (keyCode == 0)
             return;
@@ -46,14 +44,12 @@ public class AlternativeKeyBinding {
             keybinding.pressed = pressed;
     }
 
-    // Done
     public static void unPressAllKeys() {
         for (AlternativeKeyBinding keybinding : alternativeKeybindArray) {
             keybinding.unpressKey();
         }
     }
 
-    // Done
     public static void resetKeyBindingArrayAndHash() {
         alternativeHash.clearMap();
 
@@ -62,12 +58,10 @@ public class AlternativeKeyBinding {
         }
     }
 
-    // Done
     public boolean isKeyDown() {
         return this.pressed;
     }
 
-    // Done
     public boolean isPressed() {
         if (this.pressTime == 0) {
             return false;
@@ -77,27 +71,24 @@ public class AlternativeKeyBinding {
         }
     }
 
-    // Done
     private void unpressKey() {
         this.pressTime = 0;
         this.pressed = false;
     }
 
-    // Done
     public int getKeyCode() {
         return this.keyCode;
     }
 
-    // Done
     public KeyBinding getParentKeybind() {
         return this.parentKeybind;
     }
 
-    // Done
     public void setKeyCode(int keyCode) {
         this.keyCode = keyCode;
     }
 
+    // Todo: reimplement?
     // public int compareTo(KeyBinding p_compareTo_1_) {
     //     int i = I18n.format(this.keyCategory, new Object[0])
     //             .compareTo(I18n.format(p_compareTo_1_.keyCategory, new Object[0]));
