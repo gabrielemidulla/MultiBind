@@ -79,7 +79,11 @@ public class KeyEntryMixin {
             boolean isSelected) {
         // Modified vanilla buttons part
         boolean changingKeybindFlag = ((GuiKBLMixinAccessor)outer).getGuiControls().buttonId == this.keybinding;
-        mc.fontRendererObj.drawString(this.keyDesc,
+        String finalKeyStr = (this.selectedBindIndex != -1) ? 
+            this.keyDesc + " (alt " + (this.selectedBindIndex+1) + ")" :
+            this.keyDesc;
+        
+        mc.fontRendererObj.drawString(finalKeyStr,
                 x + 90 - ((GuiKBLMixinAccessor)outer).getMaxListLabelWidth(),
                 y + slotHeight / 2 - mc.fontRendererObj.FONT_HEIGHT / 2, 16777215);
         this.btnReset.xPosition = x + 200;
