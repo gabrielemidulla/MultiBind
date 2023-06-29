@@ -68,7 +68,6 @@ public class Configurator {
         String[] split1 = line.split("\\$");
         String desc = split1[0];
         String[] split2 = split1[1].split(":");
-        System.out.println(split2.length);
         return new ConfigLine(desc, split2[0], split2[1]);
     }
 
