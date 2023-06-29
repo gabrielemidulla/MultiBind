@@ -49,17 +49,27 @@ public class KeyEntryMixin {
 
 
     // Random "utils" functions
-    public int getKeyCodeAtCurrentIndex() {
+    private int getKeyCodeAtCurrentIndex() {
         if (selectedBindIndex < 0)
             return keybinding.getKeyCode();
 
             return alternativeBinds.get(selectedBindIndex).getKeyCode();
     }
 
-    public boolean isLastBind() {
+    private boolean isLastBind() {
         return selectedBindIndex == alternativeCount - 1;
     }
 
+    
+    private void setSelectedBindIndex(int newSelectedBindIndex) {
+        setSelectedBindIndex(newSelectedBindIndex, true);
+    }
+    private void setSelectedBindIndex(int newSelectedBindIndex, boolean recalcSize) {
+        if (recalcSize)
+            this.alternativeCount = alternativeBinds.size();
+        this.selectedBindIndex = newSelectedBindIndex;
+        ((KeyBindAccessor)keybinding).setSelectedBindIndex(this.selectedBindIndex);
+    }
 
     // Mixins
     @Inject(method = "<init>", at = @At("RETURN"))
@@ -137,27 +147,23 @@ public class KeyEntryMixin {
     @Overwrite
     public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int _1, int _2, int _3) {
         if (this.btnPrevious.mousePressed(mc, mouseX, mouseY)) {
-            this.selectedBindIndex--;
-            ((KeyBindAccessor)keybinding).setSelectedBindIndex(selectedBindIndex);
+            
+            setSelectedBindIndex(this.selectedBindIndex - 1, false);
 
             return true;
         }
         if (this.btnNextNew.mousePressed(mc, mouseX, mouseY)) {
             if (isLastBind())
                 ((KeyBindAccessor)keybinding).addAlternativeBind(keybinding.getKeyCodeDefault());
-
-            this.alternativeCount = alternativeBinds.size();
-            this.selectedBindIndex++;
-            ((KeyBindAccessor)keybinding).setSelectedBindIndex(selectedBindIndex);
+            
+            setSelectedBindIndex(this.selectedBindIndex + 1);
 
             return true;
         }
         if (this.btnDeleteCurrentBind.mousePressed(mc, mouseX, mouseY)) {
             ((KeyBindAccessor)keybinding).removeAlternativeKeybinding(alternativeBinds.get(selectedBindIndex));
 
-            this.alternativeCount = alternativeBinds.size();
-            this.selectedBindIndex--;
-            ((KeyBindAccessor)keybinding).setSelectedBindIndex(selectedBindIndex);
+            setSelectedBindIndex(this.selectedBindIndex - 1);
 
             return true;
         }
@@ -171,9 +177,8 @@ public class KeyEntryMixin {
             KeyBinding.resetKeyBindingArrayAndHash();
 
             ((KeyBindAccessor)keybinding).removeAllAlternativeKeybindings();
-            this.alternativeCount = alternativeBinds.size();
-            this.selectedBindIndex = -1;
-            ((KeyBindAccessor)keybinding).setSelectedBindIndex(selectedBindIndex);
+
+            setSelectedBindIndex(-1);
 
             return true;
         }

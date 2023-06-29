@@ -3,7 +3,6 @@ package me.nixuge.multibind;
 import lombok.Getter;
 import lombok.Setter;
 import me.nixuge.multibind.config.Configurator;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
