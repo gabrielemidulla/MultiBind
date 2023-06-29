@@ -24,6 +24,7 @@ public class McMod {
     // Todo: add searching capatiblity & rename "BetterBinds" (or do another mod)
     // Todo: add saving
     // Todo: fix clearing keys
+    // Todo: fix Ping!
     public static final String MOD_ID = "multibind";
     public static final String NAME = "Multi Bind";
     public static final String VERSION = "0.1.2";

@@ -22,6 +22,12 @@ public class AlternativeKeyBinding {
         alternativeHash.addKey(keyCode, this);
     }
 
+    // New functions
+    public static void removeAlternativeKeybindFromArray(AlternativeKeyBinding keyBinding) {
+        alternativeKeybindArray.remove(keyBinding);
+    }
+
+    // Vanilla-keybind like functions
     public static void onTick(int keyCode) {
         if (keyCode == 0)
             return;

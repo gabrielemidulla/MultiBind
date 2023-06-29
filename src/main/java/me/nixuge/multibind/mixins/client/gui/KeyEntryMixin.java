@@ -24,6 +24,7 @@ public class KeyEntryMixin {
     // ===== Vars =====
     private GuiButton btnPrevious;
     private GuiButton btnNextNew;
+    private GuiButton btnDeleteCurrentBind;
     // TODO: delete current keybind button
 
     // -1 = normal, other = alternative list index
@@ -52,7 +53,7 @@ public class KeyEntryMixin {
         if (selectedBindIndex < 0)
             return keybinding.getKeyCode();
 
-        return alternativeBinds.get(selectedBindIndex).getKeyCode();
+            return alternativeBinds.get(selectedBindIndex).getKeyCode();
     }
 
     public boolean isLastBind() {
@@ -69,6 +70,7 @@ public class KeyEntryMixin {
 
         this.btnPrevious = new GuiButton(0, 0, 0, 10, 20, "<");
         this.btnNextNew = new GuiButton(0, 0, 0, 10, 20, ">");
+        this.btnDeleteCurrentBind = new GuiButton(0, 0, 0, 10, 20, "§cX");
 
         this.alternativeBinds = ((KeyBindAccessor)keybinding).getAlternativeKeybinds();
         this.alternativeCount = alternativeBinds.size();
@@ -125,6 +127,11 @@ public class KeyEntryMixin {
         this.btnNextNew.displayString = isLastBind() ? "+" : ">";
         this.btnNextNew.enabled = true;
         this.btnNextNew.drawButton(mc, mouseX, mouseY);
+
+        this.btnDeleteCurrentBind.xPosition = x + 243; // 230+1 for a bit more space
+        this.btnDeleteCurrentBind.yPosition = y;
+        this.btnDeleteCurrentBind.enabled = (selectedBindIndex >= 0);
+        this.btnDeleteCurrentBind.drawButton(mc, mouseX, mouseY);
     }
 
     @Overwrite
@@ -145,6 +152,14 @@ public class KeyEntryMixin {
 
             return true;
         }
+        if (this.btnDeleteCurrentBind.mousePressed(mc, mouseX, mouseY)) {
+            ((KeyBindAccessor)keybinding).removeAlternativeKeybinding(alternativeBinds.get(selectedBindIndex));
+
+            this.alternativeCount = alternativeBinds.size();
+            this.selectedBindIndex--;
+
+            return true;
+        }
         if (this.btnChangeKeyBinding.mousePressed(mc, mouseX, mouseY)) {
             ((GuiKBLMixinAccessor)outer).getGuiControls().buttonId = this.keybinding;
 
@@ -153,6 +168,10 @@ public class KeyEntryMixin {
         if (this.btnReset.mousePressed(mc, mouseX, mouseY)) {
             mc.gameSettings.setOptionKeyBinding(this.keybinding, this.keybinding.getKeyCodeDefault());
             KeyBinding.resetKeyBindingArrayAndHash();
+
+            ((KeyBindAccessor)keybinding).removeAllAlternativeKeybindings();
+            this.alternativeCount = alternativeBinds.size();
+            this.selectedBindIndex = -1;
 
             return true;
         }

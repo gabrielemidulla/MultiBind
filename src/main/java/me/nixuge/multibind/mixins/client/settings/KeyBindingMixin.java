@@ -34,6 +34,21 @@ public class KeyBindingMixin implements KeyBindAccessor {
                 new AlternativeKeyBinding((KeyBinding) (Object) this, keyCode));
     }
 
+    public void removeAlternativeKeybinding(AlternativeKeyBinding keyBinding) {
+        AlternativeKeyBinding.removeAlternativeKeybindFromArray(keyBinding);
+        this.alternativeKeybinds.remove(keyBinding);
+        AlternativeKeyBinding.resetKeyBindingArrayAndHash();
+    }
+
+    public void removeAllAlternativeKeybindings() {
+        for (AlternativeKeyBinding keyBinding : alternativeKeybinds) {
+            AlternativeKeyBinding.removeAlternativeKeybindFromArray(keyBinding);
+        }
+        alternativeKeybinds.clear();
+        AlternativeKeyBinding.resetKeyBindingArrayAndHash();
+    }
+
+
     @Inject(method = "<init>", at = @At("RETURN"))
     public void KeyBinding(String description, int keyCode, String category, CallbackInfo ci) {
         this.alternativeKeybinds = new ArrayList<>();

@@ -8,4 +8,6 @@ public interface KeyBindAccessor {
     List<AlternativeKeyBinding> getAlternativeKeybinds();
     void addAlternativeBind(int keyCode);
     void setSelectedBindIndex(int index);
+    void removeAlternativeKeybinding(AlternativeKeyBinding keyBinding);
+    void removeAllAlternativeKeybindings();
 }
