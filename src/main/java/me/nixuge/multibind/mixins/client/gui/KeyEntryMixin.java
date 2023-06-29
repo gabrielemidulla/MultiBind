@@ -19,13 +19,12 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.EnumChatFormatting;
 
-@Mixin({GuiKeyBindingList.KeyEntry.class})
+@Mixin({ GuiKeyBindingList.KeyEntry.class })
 public class KeyEntryMixin {
     // ===== Vars =====
     private GuiButton btnPrevious;
     private GuiButton btnNextNew;
     private GuiButton btnDeleteCurrentBind;
-    // TODO: delete current keybind button
 
     // -1 = normal, other = alternative list index
     private int selectedBindIndex = -1;
@@ -43,33 +42,32 @@ public class KeyEntryMixin {
     private KeyBinding keybinding;
     @Shadow
     private String keyDesc;
-    
-    @Shadow(aliases = {"this$0", "field_148284_a"})
-    private GuiKeyBindingList outer;
 
+    @Shadow(aliases = { "this$0", "field_148284_a" })
+    private GuiKeyBindingList outer;
 
     // Random "utils" functions
     private int getKeyCodeAtCurrentIndex() {
         if (selectedBindIndex < 0)
             return keybinding.getKeyCode();
 
-            return alternativeBinds.get(selectedBindIndex).getKeyCode();
+        return alternativeBinds.get(selectedBindIndex).getKeyCode();
     }
 
     private boolean isLastBind() {
         return selectedBindIndex == alternativeCount - 1;
     }
 
-
     private void setSelectedBindIndex(int newSelectedBindIndex) {
         setSelectedBindIndex(newSelectedBindIndex, true);
     }
+
     private void setSelectedBindIndex(int newSelectedBindIndex, boolean listChanged) {
         if (listChanged)
             this.alternativeCount = alternativeBinds.size();
-        
+
         this.selectedBindIndex = newSelectedBindIndex;
-        ((KeyBindAccessor)keybinding).setSelectedBindIndex(this.selectedBindIndex);
+        ((KeyBindAccessor) keybinding).setSelectedBindIndex(this.selectedBindIndex);
     }
 
     // Mixins
@@ -83,7 +81,7 @@ public class KeyEntryMixin {
         this.btnNextNew = new GuiButton(0, 0, 0, 10, 20, ">");
         this.btnDeleteCurrentBind = new GuiButton(0, 0, 0, 10, 20, "§cx");
 
-        this.alternativeBinds = ((KeyBindAccessor)keybinding).getAlternativeKeybinds();
+        this.alternativeBinds = ((KeyBindAccessor) keybinding).getAlternativeKeybinds();
         this.alternativeCount = alternativeBinds.size();
     }
 
@@ -91,13 +89,13 @@ public class KeyEntryMixin {
     public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY,
             boolean isSelected) {
         // Modified vanilla buttons part
-        boolean changingKeybindFlag = ((GuiKBLMixinAccessor)outer).getGuiControls().buttonId == this.keybinding;
-        String finalKeyStr = (this.selectedBindIndex != -1) ? 
-            this.keyDesc + " (alt " + (this.selectedBindIndex+1) + ")" :
-            this.keyDesc;
-        
+        boolean changingKeybindFlag = ((GuiKBLMixinAccessor) outer).getGuiControls().buttonId == this.keybinding;
+        String finalKeyStr = (this.selectedBindIndex != -1)
+                ? this.keyDesc + " (alt " + (this.selectedBindIndex + 1) + ")"
+                : this.keyDesc;
+
         mc.fontRendererObj.drawString(finalKeyStr,
-                x + 90 - ((GuiKBLMixinAccessor)outer).getMaxListLabelWidth(),
+                x + 90 - ((GuiKBLMixinAccessor) outer).getMaxListLabelWidth(),
                 y + slotHeight / 2 - mc.fontRendererObj.FONT_HEIGHT / 2, 16777215);
         this.btnReset.xPosition = x + 200;
         this.btnReset.yPosition = y;
@@ -148,39 +146,38 @@ public class KeyEntryMixin {
     @Overwrite
     public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int _1, int _2, int _3) {
         if (this.btnPrevious.mousePressed(mc, mouseX, mouseY)) {
-            
+
             setSelectedBindIndex(this.selectedBindIndex - 1, false);
 
             return true;
         }
         if (this.btnNextNew.mousePressed(mc, mouseX, mouseY)) {
             if (isLastBind()) {
-                ((KeyBindAccessor)keybinding).addAlternativeBind(keybinding.getKeyCodeDefault());
+                ((KeyBindAccessor) keybinding).addAlternativeBind(keybinding.getKeyCodeDefault());
                 setSelectedBindIndex(this.selectedBindIndex + 1);
             } else {
                 setSelectedBindIndex(this.selectedBindIndex + 1, false);
             }
-            
 
             return true;
         }
         if (this.btnDeleteCurrentBind.mousePressed(mc, mouseX, mouseY)) {
-            ((KeyBindAccessor)keybinding).removeAlternativeKeybinding(alternativeBinds.get(selectedBindIndex));
+            ((KeyBindAccessor) keybinding).removeAlternativeKeybinding(alternativeBinds.get(selectedBindIndex));
 
             setSelectedBindIndex(this.selectedBindIndex - 1);
 
             return true;
         }
         if (this.btnChangeKeyBinding.mousePressed(mc, mouseX, mouseY)) {
-            ((GuiKBLMixinAccessor)outer).getGuiControls().buttonId = this.keybinding;
+            ((GuiKBLMixinAccessor) outer).getGuiControls().buttonId = this.keybinding;
 
             return true;
-        } 
+        }
         if (this.btnReset.mousePressed(mc, mouseX, mouseY)) {
             mc.gameSettings.setOptionKeyBinding(this.keybinding, this.keybinding.getKeyCodeDefault());
             KeyBinding.resetKeyBindingArrayAndHash();
 
-            ((KeyBindAccessor)keybinding).removeAllAlternativeKeybindings();
+            ((KeyBindAccessor) keybinding).removeAllAlternativeKeybindings();
 
             setSelectedBindIndex(-1);
 

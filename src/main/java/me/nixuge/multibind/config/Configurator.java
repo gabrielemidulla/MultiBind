@@ -28,11 +28,11 @@ public class Configurator {
     public void resetConfig() {
         writeToConfig("");
     }
-    
+
     public void writeToConfig(String str) {
         try (
             BufferedWriter writer = new BufferedWriter(new FileWriter(configFile))) {
-            writer.write(str);
+                writer.write(str);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,8 +43,8 @@ public class Configurator {
 
         List<KeyBinding> keyBindings = KeyBindingMixinAccessor.getKeybindArray();
         for (KeyBinding keyBinding : keyBindings) {
-            List<AlternativeKeyBinding> alternativeKeyBindings = ((KeyBindAccessor)keyBinding).getAlternativeKeybinds();
-            
+            List<AlternativeKeyBinding> alternativeKeyBindings = ((KeyBindAccessor) keyBinding).getAlternativeKeybinds();
+
             for (int i = 0; i < alternativeKeyBindings.size(); i++) {
                 AlternativeKeyBinding alternativeKeyBinding = alternativeKeyBindings.get(i);
                 stringBuilder.append("altkey_");
@@ -77,12 +77,13 @@ public class Configurator {
             Scanner scanner = new Scanner(configFile);
 
             while (scanner.hasNextLine()) {
-                ConfigLine line = parseLine(scanner.nextLine());        
+                ConfigLine line = parseLine(scanner.nextLine());
                 for (KeyBinding keyBinding : keyBindings) {
-                    // Note: may be out of order
-                    // Not like it really matters & shouldn't be, but possible. Didn't test extensively.
+                    // Note: may be out of order 
+                    // (not like it really matters + shouldn't be anyways).
+                    // Didn't test extensively tho
                     if (keyBinding.getKeyDescription().equals(line.getKeyDesc())) {
-                        ((KeyBindAccessor)keyBinding).addAlternativeBind(line.getKeyCode());
+                        ((KeyBindAccessor) keyBinding).addAlternativeBind(line.getKeyCode());
                     }
                 }
             }

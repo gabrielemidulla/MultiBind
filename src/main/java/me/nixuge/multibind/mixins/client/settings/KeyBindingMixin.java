@@ -30,6 +30,7 @@ public class KeyBindingMixin implements KeyBindAccessor {
     @Setter
     private int selectedBindIndex = -1;
 
+    // Added methods (accessible using KeyBindAccessor)
     public void addAlternativeBind(int keyCode) {
         this.alternativeKeybinds.add(
                 new AlternativeKeyBinding((KeyBinding) (Object) this, keyCode));
@@ -52,7 +53,7 @@ public class KeyBindingMixin implements KeyBindAccessor {
         McMod.getInstance().getConfigurator().saveKeybinds();
     }
 
-
+    // Mixins
     @Inject(method = "<init>", at = @At("RETURN"))
     public void KeyBinding(String description, int keyCode, String category, CallbackInfo ci) {
         this.alternativeKeybinds = new ArrayList<>();

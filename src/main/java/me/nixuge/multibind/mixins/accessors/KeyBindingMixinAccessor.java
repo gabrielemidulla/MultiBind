@@ -10,5 +10,5 @@ import net.minecraft.client.settings.KeyBinding;
 @Mixin(KeyBinding.class)
 public interface KeyBindingMixinAccessor {
     @Accessor
-    static List<KeyBinding> getKeybindArray(){return null;}
+    static List<KeyBinding> getKeybindArray(){ return null;}
 }

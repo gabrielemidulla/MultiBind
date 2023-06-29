@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiKeyBindingList;
 public interface GuiKBLMixinAccessor {
     @Accessor("field_148191_k")
     GuiControls getGuiControls();
+
     @Accessor
     int getMaxListLabelWidth();
 }

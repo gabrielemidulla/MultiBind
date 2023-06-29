@@ -40,8 +40,7 @@ public class MinecraftMixin {
     }
 
     @Shadow
-    public void toggleFullscreen() {
-    }
+    public void toggleFullscreen() {}
 
     // TODO: fix the other key press functions (see GuiContainer)
     // While at it removed every "twitch stream" bind
