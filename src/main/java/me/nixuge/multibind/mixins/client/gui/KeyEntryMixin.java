@@ -9,8 +9,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import me.nixuge.multibind.McMod;
 import me.nixuge.multibind.accessors.KeyBindAccessor;
 import me.nixuge.multibind.binds.AlternativeKeyBinding;
+import me.nixuge.multibind.config.Configurator;
 import me.nixuge.multibind.mixins.accessors.GuiKBLMixinAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -34,6 +36,7 @@ public class KeyEntryMixin {
     private int alternativeCount;
 
     private final Minecraft mc = Minecraft.getMinecraft();
+    private final Configurator configurator = McMod.getInstance().getConfigurator();
 
     @Shadow
     private GuiButton btnReset;
@@ -60,13 +63,14 @@ public class KeyEntryMixin {
         return selectedBindIndex == alternativeCount - 1;
     }
 
-    
+
     private void setSelectedBindIndex(int newSelectedBindIndex) {
         setSelectedBindIndex(newSelectedBindIndex, true);
     }
-    private void setSelectedBindIndex(int newSelectedBindIndex, boolean recalcSize) {
-        if (recalcSize)
+    private void setSelectedBindIndex(int newSelectedBindIndex, boolean listChanged) {
+        if (listChanged)
             this.alternativeCount = alternativeBinds.size();
+        
         this.selectedBindIndex = newSelectedBindIndex;
         ((KeyBindAccessor)keybinding).setSelectedBindIndex(this.selectedBindIndex);
     }
@@ -153,10 +157,13 @@ public class KeyEntryMixin {
             return true;
         }
         if (this.btnNextNew.mousePressed(mc, mouseX, mouseY)) {
-            if (isLastBind())
+            if (isLastBind()) {
                 ((KeyBindAccessor)keybinding).addAlternativeBind(keybinding.getKeyCodeDefault());
+                setSelectedBindIndex(this.selectedBindIndex + 1);
+            } else {
+                setSelectedBindIndex(this.selectedBindIndex + 1, false);
+            }
             
-            setSelectedBindIndex(this.selectedBindIndex + 1);
 
             return true;
         }

@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import me.nixuge.multibind.config.Configurator;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.io.File;
@@ -41,18 +40,6 @@ public class McMod {
         this.configDirectory = event.getModConfigurationDirectory().toString();
         final File path = new File(this.configDirectory + File.separator + McMod.MOD_ID + ".cfg");
         this.configurator = new Configurator(path);
+        configurator.loadKeybinds();
     }
-
-    @Mod.EventHandler
-    public void init(final FMLInitializationEvent event) {
-    }
-
-
-    // 2do maybe?: handle c07packetplayerdigging, c08packetplayerblockplacement packets
-    // TODO: get config working
-    // Last commit with forge config: d3b7dc2f9cabafd80945261022f9c3c35ce3977c
-    // Files in config/ gui/ & McMod.java
-
-    // TODO: fix
-    //Caused by: java.lang.IllegalArgumentException: Cannot get property PropertyDirection{name=facing, clazz=class net.minecraft.util.EnumFacing, values=[north, south, west, east]} as it does not exist in BlockState{block=minecraft:air, properties=[]}
 }

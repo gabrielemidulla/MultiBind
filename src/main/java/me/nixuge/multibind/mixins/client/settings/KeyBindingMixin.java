@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.nixuge.multibind.McMod;
 import me.nixuge.multibind.accessors.KeyBindAccessor;
 import me.nixuge.multibind.binds.AlternativeKeyBinding;
 import net.minecraft.client.settings.KeyBinding;
@@ -32,12 +33,14 @@ public class KeyBindingMixin implements KeyBindAccessor {
     public void addAlternativeBind(int keyCode) {
         this.alternativeKeybinds.add(
                 new AlternativeKeyBinding((KeyBinding) (Object) this, keyCode));
+        McMod.getInstance().getConfigurator().saveKeybinds();
     }
 
     public void removeAlternativeKeybinding(AlternativeKeyBinding keyBinding) {
         AlternativeKeyBinding.removeAlternativeKeybindFromArray(keyBinding);
         this.alternativeKeybinds.remove(keyBinding);
         AlternativeKeyBinding.resetKeyBindingArrayAndHash();
+        McMod.getInstance().getConfigurator().saveKeybinds();
     }
 
     public void removeAllAlternativeKeybindings() {
@@ -46,6 +49,7 @@ public class KeyBindingMixin implements KeyBindAccessor {
         }
         alternativeKeybinds.clear();
         AlternativeKeyBinding.resetKeyBindingArrayAndHash();
+        McMod.getInstance().getConfigurator().saveKeybinds();
     }
 
 
@@ -105,6 +109,7 @@ public class KeyBindingMixin implements KeyBindAccessor {
     private void setKeyCode(int keyCode, CallbackInfo ci) {
         if (this.selectedBindIndex >= 0) {
             this.alternativeKeybinds.get(this.selectedBindIndex).setKeyCode(keyCode);
+            McMod.getInstance().getConfigurator().saveKeybinds();
             ci.cancel();
         }
         // negative = normal bind, just process that
