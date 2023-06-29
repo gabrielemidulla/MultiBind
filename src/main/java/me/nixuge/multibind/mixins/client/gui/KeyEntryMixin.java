@@ -70,7 +70,7 @@ public class KeyEntryMixin {
 
         this.btnPrevious = new GuiButton(0, 0, 0, 10, 20, "<");
         this.btnNextNew = new GuiButton(0, 0, 0, 10, 20, ">");
-        this.btnDeleteCurrentBind = new GuiButton(0, 0, 0, 10, 20, "§cX");
+        this.btnDeleteCurrentBind = new GuiButton(0, 0, 0, 10, 20, "§cx");
 
         this.alternativeBinds = ((KeyBindAccessor)keybinding).getAlternativeKeybinds();
         this.alternativeCount = alternativeBinds.size();
@@ -157,6 +157,7 @@ public class KeyEntryMixin {
 
             this.alternativeCount = alternativeBinds.size();
             this.selectedBindIndex--;
+            ((KeyBindAccessor)keybinding).setSelectedBindIndex(selectedBindIndex);
 
             return true;
         }
@@ -172,6 +173,7 @@ public class KeyEntryMixin {
             ((KeyBindAccessor)keybinding).removeAllAlternativeKeybindings();
             this.alternativeCount = alternativeBinds.size();
             this.selectedBindIndex = -1;
+            ((KeyBindAccessor)keybinding).setSelectedBindIndex(selectedBindIndex);
 
             return true;
         }

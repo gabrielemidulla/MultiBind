@@ -2,7 +2,7 @@ package me.nixuge.multibind;
 
 import lombok.Getter;
 import lombok.Setter;
-
+import me.nixuge.multibind.config.Configurator;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -27,20 +27,21 @@ public class McMod {
     // Todo: fix Ping!
     public static final String MOD_ID = "multibind";
     public static final String NAME = "Multi Bind";
-    public static final String VERSION = "0.1.2";
+    public static final String VERSION = "0.1.3";
 
     @Getter
     @Mod.Instance(value = McMod.MOD_ID)
     private static McMod instance;
 
-    private Configuration configuration;
+    @Getter
+    private Configurator configurator;
     private String configDirectory;
 
     @Mod.EventHandler
     public void preInit(final FMLPreInitializationEvent event) {
         this.configDirectory = event.getModConfigurationDirectory().toString();
         final File path = new File(this.configDirectory + File.separator + McMod.MOD_ID + ".cfg");
-        this.configuration = new Configuration(path);
+        this.configurator = new Configurator(path);
     }
 
     @Mod.EventHandler
