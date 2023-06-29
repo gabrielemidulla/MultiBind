@@ -9,10 +9,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import me.nixuge.multibind.McMod;
 import me.nixuge.multibind.accessors.KeyBindAccessor;
 import me.nixuge.multibind.binds.AlternativeKeyBinding;
-import me.nixuge.multibind.config.Configurator;
 import me.nixuge.multibind.mixins.accessors.GuiKBLMixinAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -36,7 +34,6 @@ public class KeyEntryMixin {
     private int alternativeCount;
 
     private final Minecraft mc = Minecraft.getMinecraft();
-    private final Configurator configurator = McMod.getInstance().getConfigurator();
 
     @Shadow
     private GuiButton btnReset;
