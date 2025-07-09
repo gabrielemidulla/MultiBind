@@ -42,9 +42,6 @@ public class MinecraftMixin {
     @Shadow
     public void toggleFullscreen() {}
 
-    // TODO: fix the other key press functions (see GuiContainer)
-    // While at it removed every "twitch stream" bind
-    // Note: has to be an "Inject" to avoid crashing other mods hooking on it
     @Inject(method = "dispatchKeypresses", at = @At("HEAD"), cancellable = true)
     public void dispatchKeypresses(CallbackInfo ci) {
         int i = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() : Keyboard.getEventKey();
@@ -53,11 +50,11 @@ public class MinecraftMixin {
             && (!(this.currentScreen instanceof GuiControls) || ((GuiControls) this.currentScreen).time <= getSysTime() - 20L)
             && Keyboard.getEventKeyState()) 
         {
-            if (this.gameSettings.keyBindFullscreen.isPressed())
+            if (this.gameSettings.keyBindFullscreen.isPressed()) {
                 this.toggleFullscreen();
-            else if (this.gameSettings.keyBindScreenshot.isPressed())
-                this.ingameGUI.getChatGUI().printChatMessage(ScreenShotHelper.saveScreenshot(this.mcDataDir, this.displayWidth, this.displayHeight, this.framebufferMc));
+                ci.cancel(); // Only cancel when we handle fullscreen
+                return;
+            }
         }
-        ci.cancel();
     }
 }
